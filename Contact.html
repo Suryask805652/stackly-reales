@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Stackly · contact · get in touch</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f4f2ef;
+      color: #1e2b2f;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ===== NISE COLOR PALETTE ===== */
+    :root {
+      --primary-slate: #2c4a52;
+      --secondary-sage: #6b8f7a;
+      --tertiary-clay: #b67c6b;
+      --neutral-stone: #d9d0c5;
+      --light-sand: #f0ebe5;
+      --paper-cream: #faf7f2;
+      --charcoal-soft: #3a4a47;
+      --graphite: #2d3a37;
+      --anime-dust: #d1b99b;
+      --mist-blue: #b3c9c9;
+      --soft-shadow: 0 15px 30px -12px rgba(44, 74, 82, 0.15);
+      --transition-smooth: all 0.25s ease;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes floatBuilding {
+      0% { background-position: 0 0; }
+      100% { background-position: 250px 250px; }
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up {
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    /* ===== LOADER ===== */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--paper-cream);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .loader-spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #d9d0c5;
+      border-top-color: var(--tertiary-clay);
+      border-bottom-color: var(--primary-slate);
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-content p {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--primary-slate);
+    }
+
+    /* ===== NAVIGATION with DROPDOWN (fully responsive) ===== */
+    .navbar {
+      background-color: #ffffffec;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02);
+      padding: 0.8rem 5%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: var(--primary-slate);
+      text-decoration: none;
+    }
+    .logo i {
+      color: var(--tertiary-clay);
+      font-size: 2rem;
+      transform: rotate(-5deg);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links > li {
+      position: relative;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4e615a;
+      font-size: 1.1rem;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .nav-links a:hover,
+    .nav-links .active-page {
+      border-bottom-color: var(--tertiary-clay);
+      color: var(--primary-slate);
+    }
+
+    /* Home2 Dropdown Style */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 20px;
+      padding: 0.8rem 0;
+      min-width: 180px;
+      box-shadow: var(--soft-shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 1px solid var(--tertiary-clay);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a {
+      padding: 0.6rem 1.5rem;
+      display: block;
+      border-bottom: none !important;
+      color: var(--deep-forest);
+    }
+    .dropdown-menu a:hover {
+      background: var(--tertiary-clay);
+      color: white;
+      border-bottom: none;
+    }
+    .nav-links li:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .nav-actions .btn-outline {
+      border: 1.5px solid var(--primary-slate);
+      background: transparent;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--primary-slate);
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .nav-actions .btn-outline:hover {
+      background: var(--primary-slate);
+      color: white;
+    }
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      color: var(--primary-slate);
+      cursor: pointer;
+    }
+
+    /* ===== CONTACT HERO ===== */
+    .contact-hero {
+      background: linear-gradient(105deg, #f0ebe5 0%, #d9d0c5 100%);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 3rem 5% 4rem;
+    }
+    .contact-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.08"><path fill="%232c4a52" d="M40,80 L80,40 L120,60 L160,100 L130,150 L90,130 L50,140 L30,100 Z"/><circle cx="170" cy="40" r="18" fill="%236b8f7a" opacity="0.4"/><rect x="20" y="160" width="35" height="25" fill="%23b67c6b" opacity="0.2"/></svg>');
+      background-size: 260px 260px;
+      background-repeat: repeat;
+      animation: floatBuilding 40s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3rem;
+    }
+    .hero-text {
+      flex: 1 1 350px;
+    }
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--primary-slate);
+      line-height: 1.2;
+    }
+    .hero-text h1 span {
+      color: var(--tertiary-clay);
+      border-bottom: 3px solid var(--secondary-sage);
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      color: var(--charcoal-soft);
+      max-width: 550px;
+      margin: 1.5rem 0 2rem;
+    }
+    .contact-badge {
+      background: white;
+      padding: 0.6rem 1.8rem;
+      border-radius: 60px;
+      display: inline-block;
+      box-shadow: var(--soft-shadow);
+      font-weight: 500;
+      border: 1px solid var(--neutral-stone);
+    }
+    .contact-badge i {
+      color: var(--tertiary-clay);
+      margin-right: 0.5rem;
+    }
+
+    /* ===== CONTACT INFO CARDS ===== */
+    .contact-info-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      padding: 3rem 5% 2rem;
+    }
+    .info-card {
+      flex: 1 1 200px;
+      max-width: 260px;
+      background: white;
+      border-radius: 40px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--soft-shadow);
+      border: 1px solid var(--neutral-stone);
+      transition: var(--transition-smooth);
+    }
+    .info-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--secondary-sage);
+    }
+    .info-card i {
+      font-size: 2.8rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1rem;
+    }
+    .info-card h3 {
+      font-size: 1.5rem;
+      color: var(--primary-slate);
+      margin-bottom: 0.5rem;
+    }
+    .info-card p {
+      color: var(--charcoal-soft);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    /* ===== CONTACT FORM SECTION ===== */
+    .form-section {
+      padding: 2rem 5% 4rem;
+    }
+    .form-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 60px;
+      padding: 3rem;
+      box-shadow: var(--soft-shadow);
+      border: 1px solid var(--neutral-stone);
+    }
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .form-left {
+      flex: 1 1 300px;
+    }
+    .form-right {
+      flex: 1 1 300px;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--primary-slate);
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      border: 2px solid var(--neutral-stone);
+      border-radius: 60px;
+      font-size: 1rem;
+      transition: 0.2s;
+      background: var(--paper-cream);
+    }
+    .form-group textarea {
+      border-radius: 30px;
+      resize: vertical;
+      min-height: 140px;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--tertiary-clay);
+    }
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232c4a52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 1.5rem center;
+      background-size: 1rem;
+    }
+    .submit-btn {
+      background: var(--tertiary-clay);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 1rem 3rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1.1rem;
+      width: 100%;
+    }
+    .submit-btn:hover {
+      background: #9f6b5a;
+      transform: scale(1.02);
+    }
+    .form-error {
+      color: #b15e5e;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      min-height: 1.4rem;
+    }
+
+    /* ===== MAP SECTION (full responsive) ===== */
+    .map-section {
+      padding: 0 5% 4rem;
+    }
+    .map-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--light-sand);
+      border-radius: 60px;
+      padding: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      border: 1px solid var(--neutral-stone);
+    }
+    .map-placeholder {
+      flex: 2 1 400px;
+      min-width: 280px;
+      height: 320px;
+      background: var(--neutral-stone);
+      border-radius: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-slate);
+      font-size: 1.2rem;
+      background-image: radial-gradient(circle at 30% 40%, var(--secondary-sage) 0%, transparent 40%),
+                        linear-gradient(145deg, var(--anime-dust) 0%, var(--mist-blue) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .map-placeholder i {
+      font-size: 4rem;
+      color: var(--primary-slate);
+      margin-bottom: 1rem;
+      opacity: 0.9;
+    }
+    .map-placeholder span {
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+    }
+    .map-address {
+      flex: 1 1 280px;
+      padding: 1rem;
+    }
+    .map-address h3 {
+      font-size: 2rem;
+      color: var(--primary-slate);
+      margin-bottom: 1.5rem;
+      border-left: 6px solid var(--tertiary-clay);
+      padding-left: 1rem;
+    }
+    .map-address p {
+      margin-bottom: 1rem;
+      color: var(--charcoal-soft);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .map-address i {
+      color: var(--tertiary-clay);
+      width: 2rem;
+      font-size: 1.3rem;
+    }
+
+    /* ===== 404 PAGE ===== */
+    .page-404 {
+      display: none;
+      text-align: center;
+      padding: 5rem 5%;
+      min-height: 70vh;
+      background: var(--paper-cream);
+      border-radius: 80px;
+      margin: 2rem 5%;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .page-404 h1 {
+      font-size: 6rem;
+      color: var(--primary-slate);
+    }
+    .page-404 h2 {
+      font-size: 2.5rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1.5rem;
+    }
+    .btn-primary {
+      background: var(--tertiary-clay);
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.2s;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* ===== FOOTER (ULTRA RESPONSIVE) ===== */
+    .footer {
+      background: #2c3a37;
+      color: #e0e9e0;
+      padding: 3rem 5% 2rem;
+      margin-top: 3rem;
+      border-top: 6px solid var(--tertiary-clay);
+    }
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: space-between;
+    }
+    .footer-col {
+      flex: 1 1 160px;
+      min-width: 150px;
+    }
+    .footer-col.brand-col {
+      flex: 2 1 300px;
+    }
+    .footer-logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .footer-logo i {
+      color: var(--anime-dust);
+    }
+    .footer-col p {
+      margin: 1rem 0 1.5rem;
+      opacity: 0.8;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .social-links a {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .social-links a:hover {
+      background: var(--tertiary-clay);
+      color: #1e2b2f;
+    }
+    .footer-col h4 {
+      color: white;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid var(--tertiary-clay);
+      padding-left: 0.8rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 0.8rem;
+    }
+    .footer-col a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .footer-col a:hover {
+      color: var(--anime-dust);
+      transform: translateX(5px);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 3rem;
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-bottom-links a {
+      color: #cbdcd0;
+      text-decoration: none;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--anime-dust);
+    }
+
+    /* ===== IMPROVED MOBILE DROPDOWN ===== */
+    @media screen and (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+        background: white;
+        padding: 1rem 0;
+        margin-top: 1rem;
+        border-radius: 24px;
+        text-align: center;
+        gap: 0rem;
+        box-shadow: 0 20px 30px rgba(0,0,0,0.05);
+      }
+      .nav-links.active { display: flex; }
+      .nav-links > li { 
+        width: 100%; 
+        margin: 0.2rem 0;
+      }
+      .nav-links a {
+        padding: 0.8rem;
+        justify-content: center;
+      }
+      
+      /* Dropdown in mobile - show on click/tap */
+      .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        margin: 0.5rem auto;
+        background: var(--soft-clay);
+        display: none;
+        width: 90%;
+        border-radius: 15px;
+      }
+      .dropdown-menu a {
+        color: var(--primary-slate);
+        padding: 0.8rem;
+      }
+      /* Show dropdown when parent has active class (added via JavaScript) */
+      .nav-links li.active-dropdown .dropdown-menu {
+        display: block;
+      }
+      
+      .hero-content { gap: 2rem; }
+      .info-card { max-width: 100%; }
+      .form-container { padding: 2rem; }
+      
+      /* MAP RESPONSIVE */
+      .map-container { 
+        flex-direction: column; 
+        text-align: center; 
+        padding: 1.5rem;
+      }
+      .map-placeholder { 
+        width: 100%; 
+        height: 250px; 
+      }
+      .map-address { 
+        text-align: center; 
+        width: 100%;
+      }
+      .map-address h3 {
+        border-left: none;
+        border-bottom: 3px solid var(--tertiary-clay);
+        padding-left: 0;
+        padding-bottom: 0.5rem;
+        text-align: center;
+      }
+      .map-address p {
+        justify-content: center;
+      }
+      
+      /* FOOTER FULL RESPONSIVE */
+      .footer-grid {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .footer-col {
+        min-width: 100%;
+        text-align: center;
+      }
+      .footer-col.brand-col p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer-col h4 {
+        text-align: center;
+        border-left: none;
+        border-bottom: 2px solid var(--tertiary-clay);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .social-links {
+        justify-content: center;
+        gap: 1rem;
+      }
+      .social-links a {
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-bottom-links {
+        justify-content: center;
+        gap: 1.5rem;
+      }
+    }
+
+    /* EXTRA SMALL DEVICES */
+    @media screen and (max-width: 480px) {
+      .form-container { padding: 1.5rem; }
+      .form-group input, 
+      .form-group textarea, 
+      .form-group select { padding: 0.8rem 1.2rem; }
+      .submit-btn { padding: 0.8rem; }
+      
+      .map-placeholder { 
+        height: 200px; 
+      }
+      .map-placeholder i {
+        font-size: 3rem;
+      }
+      .map-address h3 {
+        font-size: 1.8rem;
+      }
+      
+      .social-links a {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+      }
+      .footer-bottom-links {
+        gap: 1rem;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADER -->
+  <div id="loader-wrapper">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p><i class="fas fa-leaf"></i> Stackly · contact loading <i class="fas fa-envelope"></i></p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html"><i class="fas fa-tree logo-icon"></i> <span>Stackly</span></a>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- Home with Dropdown (Home2 style) -->
+        <li class="home-dropdown">
+          <a href="index.html" class="home-link">Home <i class="fas fa-chevron-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="index.html">Home1</a></li>
+            <li><a href="home2.html">Home2</a></li>
+            <!-- <li><a href="home3.html">Home Style 3</a></li> -->
+          </ul>
+        </li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="#" class="active-page">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <!-- Sign in button now links to signin.html -->
+        <a href="sign in.html" class="btn-outline"><i class="fas fa-user"></i> Sign in</a>
+        <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      </div>
+    </nav>
+
+    <!-- CONTACT HERO -->
+    <section class="contact-hero">
+      <div class="hero-content">
+        <div class="hero-text fade-up">
+          <h1><span>get in touch</span> <i class="fas fa-paper-plane"></i><br>we'd love to hear</h1>
+          <p>Have questions? Our team is here to help. Reach out any time.</p>
+          <div class="contact-badge"><i class="fas fa-clock"></i> reply within 24h</div>
+        </div>
+        <div class="hero-chart" style="flex:1 1 300px; background:rgba(255,255,255,0.4); backdrop-filter:blur(8px); border-radius:60px; padding:2rem; border:2px solid white;">
+          <i class="fas fa-envelope-open-text" style="font-size:4rem; color:var(--tertiary-clay); margin-bottom:1rem;"></i>
+          <p style="color:var(--primary-slate);">hello@stackly.com · 1 (800) 555-1234</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT INFO CARDS -->
+    <div class="contact-info-cards">
+      <div class="info-card"><i class="fas fa-map-pin"></i><h3>Visit</h3><p>123 Main Street, Suite 100<br>Austin, TX 78701</p></div>
+      <div class="info-card"><i class="fas fa-phone-alt"></i><h3>Call</h3><p>+1 (512) 555-6789<br>Mon-Fri 9am–6pm</p></div>
+      <div class="info-card"><i class="fas fa-envelope"></i><h3>Email</h3><p>hello@stackly.com<br>support@stackly.com</p></div>
+      <div class="info-card"><i class="fas fa-comments"></i><h3>Social</h3><p>@stacklyrealestate<br>We reply fast</p></div>
+    </div>
+
+    <!-- CONTACT FORM SECTION -->
+    <section class="form-section">
+      <div class="form-container">
+        <h2 style="color:var(--primary-slate); margin-bottom:2rem; text-align:center;">send us a message</h2>
+        <div class="form-grid">
+          <div class="form-left">
+            <div class="form-group">
+              <label for="name">Full name *</label>
+              <input type="text" id="name" placeholder="John Doe">
+              <div class="form-error" id="nameError"></div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email address *</label>
+              <input type="email" id="email" placeholder="john@example.com">
+              <div class="form-error" id="emailError"></div>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" placeholder="(512) 555-1234">
+            </div>
+          </div>
+          <div class="form-right">
+            <div class="form-group">
+              <label for="subject">Subject *</label>
+              <select id="subject">
+                <option value="">Select a topic</option>
+                <option value="general">General inquiry</option>
+                <option value="listings">Listings question</option>
+                <option value="agents">Agent question</option>
+                <option value="support">Support</option>
+              </select>
+              <div class="form-error" id="subjectError"></div>
+            </div>
+            <div class="form-group">
+              <label for="message">Message *</label>
+              <textarea id="message" placeholder="How can we help?"></textarea>
+              <div class="form-error" id="messageError"></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:2rem;">
+          <button class="submit-btn" id="contactSubmit"><i class="fas fa-paper-plane"></i> Send message</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP SECTION (fully responsive) -->
+    <section class="map-section">
+      <div class="map-container">
+        <div class="map-placeholder">
+          <i class="fas fa-map-marked-alt"></i>
+          <span>Interactive map</span>
+        </div>
+        <div class="map-address">
+          <h3>stackly headquarters</h3>
+          <p><i class="fas fa-building"></i> 123 Main Street, Suite 100</p>
+          <p><i class="fas fa-city"></i> Austin, TX 78701</p>
+          <p><i class="fas fa-subway"></i> 2 blocks from metro</p>
+          <p><i class="fas fa-parking"></i> free parking available</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER (ULTRA RESPONSIVE) -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <div class="footer-logo"><a href="#"><i class="fas fa-tree"></i> Stackly</a></div>
+          <p>Real estate with earthy soul & professional heart. We turn properties into dreams.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#">Listings</a></li>
+            <li><a href="#">Agents</a></li>
+            <li><a href="#">Insights</a></li>
+            <li><a href="#">Open houses</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Mortgage calc</a></li>
+            <li><a href="#">Market stats</a></li>
+            <li><a href="#">Buyer guide</a></li>
+            <li><a href="#">Seller guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Stackly — all rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 404 PAGE (hidden, triggered on submit) -->
+  <div id="page404" class="page-404">
+    <h1>404</h1>
+    <h2>message sent (demo)</h2>
+    <p>This is a simulation. In a real site, your message would be delivered.</p>
+    <button id="backHomeBtn" class="btn-primary"><i class="fas fa-undo-alt"></i> back to contact</button>
+  </div>
+
+  <script>
+    (function() {
+      window.addEventListener('load', function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) { loader.classList.add('loader-hidden'); setTimeout(() => loader.style.display='none', 600); }
+      });
+
+      // mobile nav
+      const toggleBtn = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if(!navLinks.contains(e.target) && !toggleBtn.contains(e.target)) navLinks.classList.remove('active'); });
+      }
+
+      // Mobile dropdown toggle for Home
+      const homeDropdown = document.querySelector('.home-dropdown');
+      if (homeDropdown) {
+        homeDropdown.addEventListener('click', function(e) {
+          // Only for mobile view
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            this.classList.toggle('active-dropdown');
+          }
+        });
+      }
+
+      // CONTACT FORM VALIDATION + 404 DEMO
+      const submitBtn = document.getElementById('contactSubmit');
+      const nameInput = document.getElementById('name');
+      const emailInput = document.getElementById('email');
+      const subjectSelect = document.getElementById('subject');
+      const messageInput = document.getElementById('message');
+      const nameError = document.getElementById('nameError');
+      const emailError = document.getElementById('emailError');
+      const subjectError = document.getElementById('subjectError');
+      const messageError = document.getElementById('messageError');
+      const mainContent = document.getElementById('mainContent');
+      const page404 = document.getElementById('page404');
+      const backHomeBtn = document.getElementById('backHomeBtn');
+
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          let isValid = true;
+
+          // reset errors
+          nameError.textContent = '';
+          emailError.textContent = '';
+          subjectError.textContent = '';
+          messageError.textContent = '';
+
+          // name
+          if (!nameInput.value.trim()) {
+            nameError.textContent = 'Name is required';
+            isValid = false;
+          }
+
+          // email
+          const email = emailInput.value.trim();
+          if (!email) {
+            emailError.textContent = 'Email is required';
+            isValid = false;
+          } else if (!validateEmail(email)) {
+            emailError.textContent = 'Invalid email format';
+            isValid = false;
+          }
+
+          // subject
+          if (!subjectSelect.value) {
+            subjectError.textContent = 'Please select a subject';
+            isValid = false;
+          }
+
+          // message
+          if (!messageInput.value.trim()) {
+            messageError.textContent = 'Message cannot be empty';
+            isValid = false;
+          }
+
+          if (isValid) {
+            // show 404 demo page
+            mainContent.style.display = 'none';
+            page404.style.display = 'flex';
+            window.scrollTo(0, 0);
+          }
+        });
+      }
+
+      // back from 404
+      if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', function() {
+          mainContent.style.display = 'block';
+          page404.style.display = 'none';
+          // optional reset form
+          nameInput.value = '';
+          emailInput.value = '';
+          subjectSelect.value = '';
+          messageInput.value = '';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Stackly · our anime agents · fully responsive</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f9f6f2;
+      color: #1e2b2f;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ===== MULTICOLOR + NISE PALETTE ===== */
+    :root {
+      --deep-forest: #1a3d2f;
+      --warm-stone: #5f6b5c;
+      --terracotta: #c97c5b;
+      --soft-clay: #e7b89c;
+      --mist-green: #c2d9cc;
+      --cream-white: #fffaf5;
+      --light-bg: #f0ede8;
+      --charcoal: #2d3e3c;
+      --warm-gold: #d4a56c;
+      --anime-pink: #f8d5cf;
+      --anime-lavender: #d9d0e6;
+      --anime-sky: #c1dbe3;
+      --anime-mint: #b8e0d4;
+      --anime-peach: #ffe1b5;
+      --anime-lilac: #e2cfe8;
+      --soft-shadow: 0 20px 30px -10px rgba(45, 62, 60, 0.12);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes floatBuilding {
+      0% { background-position: 0 0; }
+      100% { background-position: 250px 250px; }
+    }
+    @keyframes shimmer {
+      0% { opacity: 0.5; transform: scale(1); }
+      100% { opacity: 1; transform: scale(1.02); }
+    }
+    @keyframes drift {
+      0% { background-position: 0 0; }
+      100% { background-position: 120px 120px; }
+    }
+    @keyframes gentleJump {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(-6px); }
+      50% { transform: translateY(2px); }
+      75% { transform: translateY(-2px); }
+    }
+    @keyframes floatSoft {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0px); }
+    }
+    @keyframes slideInLeft {
+      0% { opacity: 0; transform: translateX(-40px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+      0% { opacity: 0; transform: translateX(40px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .slide-left {
+      animation: slideInLeft 0.6s ease forwards;
+    }
+    .slide-right {
+      animation: slideInRight 0.6s ease forwards;
+    }
+    
+    .jump-text {
+      display: inline-block;
+      animation: gentleJump 1.2s ease 2;
+    }
+    .logo-icon {
+      display: inline-block;
+      animation: floatSoft 3s ease-in-out infinite;
+    }
+    .hover-zoom {
+      overflow: hidden;
+    }
+    .hover-zoom img {
+      transition: transform 0.5s ease;
+    }
+    .hover-zoom:hover img {
+      transform: scale(1.07) rotate(1deg);
+    }
+
+    /* ===== LOADER ===== */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--cream-white);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .loader-spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #e0d6cd;
+      border-top-color: var(--terracotta);
+      border-bottom-color: var(--deep-forest);
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-content p {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--deep-forest);
+    }
+
+    /* ===== NAVIGATION with DROPDOWN (fully responsive) ===== */
+    .navbar {
+      background-color: var(--cream-white);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+      padding: 0.8rem 5%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: var(--deep-forest);
+      text-decoration: none;
+    }
+    .logo i {
+      color: var(--terracotta);
+      font-size: 2rem;
+      transform: rotate(-5deg);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      transition: all 0.2s;
+      align-items: center;
+    }
+    .nav-links > li {
+      position: relative;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: var(--warm-stone);
+      font-size: 1.1rem;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .nav-links a:hover,
+    .nav-links .active-page {
+      border-bottom-color: var(--terracotta);
+      color: var(--deep-forest);
+    }
+
+    /* Home2 Dropdown Style */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 20px;
+      padding: 0.8rem 0;
+      min-width: 160px;
+      box-shadow: var(--soft-shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 1px solid var(--soft-clay);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a {
+      padding: 0.6rem 1.5rem;
+      display: block;
+      border-bottom: none !important;
+      color: var(--deep-forest);
+    }
+    .dropdown-menu a:hover {
+      background: var(--soft-clay);
+      color: var(--deep-forest);
+      border-bottom: none;
+    }
+    .nav-links li:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .nav-actions .btn-outline {
+      border: 1.5px solid var(--deep-forest);
+      background: transparent;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--deep-forest);
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .nav-actions .btn-outline:hover {
+      background: var(--deep-forest);
+      color: white;
+    }
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      color: var(--deep-forest);
+      cursor: pointer;
+    }
+
+    /* ===== HERO (fully responsive) ===== */
+    .agents-hero {
+      background: linear-gradient(145deg, #f8d5cf 0%, #d9d0e6 30%, #c1dbe3 70%, #b8e0d4 100%);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 4rem 5%;
+    }
+    .agents-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.15"><path fill="%23c97c5b" d="M59.5,49.5 L80,20 L100.5,49.5 L140,60 L110,90 L115,135 L80,115 L45,135 L50,90 L20,60 Z"/><circle cx="150" cy="70" r="12" fill="%23c2d9cc"/><rect x="30" y="130" width="25" height="30" fill="%235f6b5c" opacity="0.4"/><circle cx="170" cy="160" r="18" fill="%23e7b89c" opacity="0.3"/><circle cx="20" cy="40" r="25" fill="%23d9d0e6" opacity="0.3"/></svg>');
+      background-size: 250px 250px;
+      background-repeat: repeat;
+      animation: floatBuilding 40s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .agents-hero::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(255,225,200,0.4) 0%, transparent 40%),
+                  radial-gradient(circle at 90% 70%, rgba(200,230,240,0.5) 0%, transparent 50%);
+      top: 0;
+      animation: shimmer 14s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+    }
+    .hero-text {
+      flex: 1 1 300px;
+    }
+    .hero-text h1 {
+      font-size: clamp(2.2rem, 7vw, 4.2rem);
+      font-weight: 700;
+      color: var(--deep-forest);
+    }
+    .hero-text h1 span {
+      color: var(--terracotta);
+      border-bottom: 4px dotted var(--warm-gold);
+    }
+    .hero-text p {
+      font-size: clamp(1.1rem, 3vw, 1.3rem);
+      color: #2e4d42;
+      max-width: 600px;
+      margin: 1rem 0;
+    }
+    .hero-badge {
+      background: rgba(255,255,245,0.3);
+      backdrop-filter: blur(8px);
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      border: 1px solid white;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    /* ===== SLIDING INTRO PANELS (responsive flex) ===== */
+    .intro-panels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 3rem 5%;
+      background: linear-gradient(120deg, #ffe1b5 0%, #e2cfe8 100%);
+      border-radius: 80px 80px 0 0;
+      margin-top: -2rem;
+      position: relative;
+    }
+    .panel {
+      flex: 1 1 200px;
+      min-width: 180px;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 1.5rem;
+      box-shadow: var(--soft-shadow);
+      border: 2px solid white;
+      transition: transform 0.3s;
+    }
+    .panel:hover { transform: translateY(-10px); }
+    .panel i { font-size: 2.5rem; color: var(--terracotta); margin-bottom: 0.8rem; }
+    .panel:nth-child(1) { background: rgba(248,213,207,0.7); }
+    .panel:nth-child(2) { background: rgba(217,208,230,0.7); }
+    .panel:nth-child(3) { background: rgba(193,219,227,0.7); }
+    .panel:nth-child(4) { background: rgba(184,224,212,0.7); }
+
+    /* ===== AGENT CARDS (responsive grid) ===== */
+    .agents-grid-section {
+      padding: 3rem 5%;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-header h2 {
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      color: var(--deep-forest);
+    }
+    .section-header h2 i { color: var(--terracotta); margin: 0 0.5rem; }
+    .agent-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      justify-content: center;
+    }
+    .agent-card {
+      flex: 1 1 240px;
+      max-width: 280px;
+      min-width: 220px;
+      background: var(--cream-white);
+      border-radius: 50px;
+      padding: 1.8rem 1.2rem;
+      text-align: center;
+      box-shadow: var(--soft-shadow);
+      transition: all 0.3s;
+      background: linear-gradient(145deg, white, #faf0ea);
+    }
+    .agent-card:nth-child(1) { border-bottom: 8px solid var(--anime-pink); }
+    .agent-card:nth-child(2) { border-bottom: 8px solid var(--anime-lavender); }
+    .agent-card:nth-child(3) { border-bottom: 8px solid var(--anime-sky); }
+    .agent-card:nth-child(4) { border-bottom: 8px solid var(--anime-mint); }
+    .agent-card:nth-child(5) { border-bottom: 8px solid var(--anime-peach); }
+    .agent-card:nth-child(6) { border-bottom: 8px solid var(--anime-lilac); }
+    .agent-card:hover {
+      transform: scale(1.02) translateY(-8px);
+      box-shadow: 0 25px 35px -10px #c97c5b;
+    }
+    .agent-img {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 5px solid white;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+      background: #dcd0c5;
+    }
+    .agent-card h3 { font-size: 1.6rem; color: var(--deep-forest); }
+    .agent-card .title { color: var(--terracotta); font-weight: 600; margin: 0.3rem 0; }
+    .agent-stars { color: #f5b342; margin-bottom: 0.8rem; }
+    .agent-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center; }
+    .tag {
+      background: var(--soft-clay);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+    }
+
+    /* ===== IMAGE SLIDER (fully responsive) ===== */
+    .slider-section {
+      padding: 2rem 5% 4rem;
+      background: var(--light-bg);
+      border-radius: 60px;
+      margin: 2rem 5%;
+    }
+    .slider-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      border-radius: 48px;
+    }
+    .slider-wrapper {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+    .slide {
+      flex: 0 0 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      background: var(--cream-white);
+    }
+    .slide-image {
+      flex: 1 1 280px;
+      min-height: 280px;
+      background-size: cover;
+      background-position: center;
+      background-color: #b8cfc2;
+      background-blend-mode: overlay;
+    }
+    .slide-content {
+      flex: 1 1 280px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .slider-nav {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .slider-nav button {
+      background: white;
+      border: none;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      font-size: 1.8rem;
+      color: var(--deep-forest);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .slider-nav button:hover { background: var(--terracotta); color: white; }
+
+    /* ===== SPOTLIGHT SLIDER (responsive) ===== */
+    .spotlight-slider {
+      background: linear-gradient(145deg, #b8e0d4, #e2cfe8);
+      padding: 3rem 5%;
+      margin: 2rem 0;
+    }
+    .spotlight-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .spotlight-text {
+      flex: 1 1 300px;
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(6px);
+      border-radius: 50px;
+      padding: 2rem;
+    }
+    .spotlight-slider-mini {
+      flex: 1 1 300px;
+      background: rgba(255,255,240,0.3);
+      border-radius: 40px;
+      padding: 1.5rem;
+    }
+    .mini-slide {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      background: white;
+      border-radius: 60px;
+      padding: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    .mini-slide img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* ===== NEWSLETTER (responsive) with email validation ===== */
+    .newsletter-anime {
+      background: linear-gradient(130deg, #1a3d2f, #3d5e55);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 4rem 5%;
+      margin: 3rem 0;
+    }
+    .newsletter-anime::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" opacity="0.12"><path d="M20 10 L30 0 L40 10 L55 10 L55 25 L45 35 L45 50 L30 60 L15 50 L15 35 L5 25 L5 10 Z" fill="%23e7b89c"/><circle cx="45" cy="20" r="5" fill="%23c2d9cc"/></svg>');
+      background-size: 120px 120px;
+      animation: drift 24s linear infinite;
+      z-index: 0;
+    }
+    .newsletter-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      color: white;
+    }
+    .newsletter-text h3 {
+      font-size: clamp(1.8rem, 4vw, 2.2rem);
+    }
+    .newsletter-form { flex: 1 1 300px; }
+    .newsletter-form .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .newsletter-form input {
+      flex: 1 1 200px;
+      padding: 1rem 1.5rem;
+      border: none;
+      border-radius: 60px;
+    }
+    .newsletter-form button {
+      background: var(--terracotta);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 1rem 2.2rem;
+      border-radius: 60px;
+      cursor: pointer;
+    }
+    .email-error {
+      color: #ffb3a0;
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+      min-height: 1.4rem;
+    }
+
+    /* ===== 404 PAGE ===== */
+    .page-404 {
+      display: none;
+      text-align: center;
+      padding: 5rem 5%;
+      min-height: 70vh;
+      background: var(--light-bg);
+      border-radius: 80px;
+      margin: 2rem 5%;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .page-404 h1 {
+      font-size: 6rem;
+      color: var(--deep-forest);
+    }
+    .page-404 h2 {
+      font-size: 2.5rem;
+      color: var(--terracotta);
+      margin-bottom: 1.5rem;
+    }
+    .page-404 p {
+      font-size: 1.2rem;
+      color: var(--charcoal);
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+    .btn-primary {
+      background: var(--terracotta);
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    /* ===== FOOTER (UPDATED – FULLY RESPONSIVE with anime colors) ===== */
+    .footer {
+      background: var(--deep-forest);
+      color: #e0e9e0;
+      padding: 3rem 5% 2rem;
+      margin-top: 3rem;
+      border-top: 6px solid var(--terracotta);
+    }
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: space-between;
+    }
+    .footer-col {
+      flex: 1 1 160px;
+      min-width: 150px;
+    }
+    .footer-col.brand-col {
+      flex: 2 1 300px;
+    }
+    .footer-logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .footer-logo i {
+      color: var(--soft-clay);
+    }
+    .footer-col p {
+      margin: 1rem 0 1.5rem;
+      opacity: 0.8;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    .social-links {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .social-links a {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+      font-size: 1.2rem;
+    }
+    .social-links a:hover {
+      background: var(--terracotta);
+      color: var(--deep-forest);
+      transform: translateY(-5px);
+    }
+    .footer-col h4 {
+      color: white;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid var(--terracotta);
+      padding-left: 0.8rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 0.8rem;
+    }
+    .footer-col a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .footer-col a:hover {
+      color: var(--soft-clay);
+      transform: translateX(5px);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 3rem;
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-bottom-links a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--soft-clay);
+    }
+
+    /* ===== IMPROVED MOBILE DROPDOWN ===== */
+    @media screen and (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+        background: var(--cream-white);
+        padding: 1rem 0;
+        border-radius: 24px;
+        text-align: center;
+        gap: 0rem;
+        box-shadow: 0 15px 25px -8px rgba(0,0,0,0.1);
+      }
+      .nav-links.active { display: flex; }
+      .nav-links > li { 
+        width: 100%; 
+        margin: 0.2rem 0;
+      }
+      .nav-links a {
+        padding: 0.8rem;
+        justify-content: center;
+      }
+      
+      /* Dropdown in mobile - show on click/tap */
+      .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        margin: 0.5rem auto;
+        background: var(--soft-clay);
+        display: none;
+        width: 90%;
+        border-radius: 15px;
+      }
+      .dropdown-menu a {
+        color: var(--deep-forest);
+        padding: 0.8rem;
+      }
+      /* Show dropdown when parent has active class (added via JavaScript) */
+      .nav-links li.active-dropdown .dropdown-menu {
+        display: block;
+      }
+      
+      .intro-panels { gap: 1rem; }
+      .panel { min-width: 140px; }
+      .slide { flex-direction: column; }
+      .slide-image { min-height: 200px; }
+      .slider-nav button { width: 44px; height: 44px; font-size: 1.4rem; }
+      
+      /* footer responsive */
+      .footer-grid {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .footer-col {
+        min-width: 100%;
+        text-align: center;
+      }
+      .footer-col.brand-col p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .social-links {
+        justify-content: center;
+      }
+      .footer-col h4 {
+        text-align: center;
+        border-left: none;
+        border-bottom: 2px solid var(--terracotta);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-bottom-links {
+        justify-content: center;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .hero-badge { font-size: 0.9rem; padding: 0.6rem 1.2rem; }
+      .panel { flex: 1 1 100%; }
+      .agent-card { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADER -->
+  <div id="loader-wrapper">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p><i class="fas fa-leaf"></i> Stackly · agents loading <i class="fas fa-smile"></i></p>
+    </div>
+  </div>
+
+  <div id="mainContent">
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html"><i class="fas fa-tree logo-icon"></i> <span>Stackly</span></a>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- Home with Dropdown (Home2 style) -->
+        <li class="home-dropdown">
+          <a href="index.html" class="home-link">Home <i class="fas fa-chevron-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="index.html">Home1</a></li>
+            <li><a href="home2.html">Home2</a></li>
+          </ul>
+        </li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="Agents.html" class="active-page">Agents</a></li>
+        <li><a href="Insights.html">Insights</a></li>
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="#" class="btn-outline trigger-404"><i class="fas fa-user"></i> Sign in</a>
+        <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      </div>
+    </nav>
+
+    <!-- HERO anime multicolor -->
+    <section class="agents-hero">
+      <div class="hero-content">
+        <div class="hero-text slide-left">
+          <h1><span>agents</span> <i class="fas fa-feather"></i><br>meet the dream team</h1>
+          <p>Passionate · local · multicolor personalities</p>
+          <div class="hero-badge"><i class="fas fa-star"></i> 28 experts · 6 languages</div>
+          <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600;">Meet all agents</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 2px solid var(--deep-forest); color: var(--deep-forest); padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600;">Schedule call</a>
+          </div>
+        </div>
+        <div class="slide-right" style="text-align: center;">
+          <i class="fas fa-people-group" style="font-size: 5rem; color: var(--terracotta); opacity: 0.8;"></i>
+          <div style="margin-top: 1rem;">
+            <a href="#" class="trigger-404" style="color: var(--deep-forest); font-weight: 600;">Learn more →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- sliding intro panels (latter sliders) -->
+    <div class="intro-panels">
+      <div class="panel slide-left"><i class="fas fa-hand-holding-heart"></i><h3>Local souls</h3><p>We live where you want to live.</p><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--deep-forest);">Learn more →</a></div>
+      <div class="panel slide-left" style="animation-delay:0.1s"><i class="fas fa-palette"></i><h3>Anime style</h3><p>Colorful & creative approach.</p><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--deep-forest);">Learn more →</a></div>
+      <div class="panel slide-right" style="animation-delay:0.1s"><i class="fas fa-chart-line"></i><h3>Top performers</h3><p>$2.8B sold in 2024.</p><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--deep-forest);">Learn more →</a></div>
+      <div class="panel slide-right"><i class="fas fa-globe"></i><h3>Multilingual</h3><p>English · Spanish · Japanese</p><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--deep-forest);">Learn more →</a></div>
+    </div>
+
+    <!-- AGENT GRID (multicolor cards) -->
+    <section class="agents-grid-section">
+      <div class="section-header">
+        <h2><i class="fas fa-star"></i> our colorful family <i class="fas fa-star"></i></h2>
+        <p>each agent brings a unique anime vibe</p>
+      </div>
+      <div class="agent-grid">
+        <!-- 6 agents with multicolor accents -->
+        <div class="agent-card hover-zoom">
+          <img src="naomi.webp" alt="Naomi" class="agent-img" style="background-color: #f5d5cf;">
+          <h3>Naomi T.</h3>
+          <div class="title">Eco & mountain specialist</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+          <div class="agent-tags"><span class="tag">#anime lover</span><span class="tag">#forest</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+        <div class="agent-card hover-zoom">
+          <img src="David Chen.webp" alt="David" class="agent-img" style="background-color: #d9d0e6;">
+          <h3>David Chen</h3>
+          <div class="title">Luxury buyer</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <div class="agent-tags"><span class="tag">#penthouse</span><span class="tag">#design</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+        <div class="agent-card hover-zoom">
+          <img src="Elena R.webp" alt="Elena" class="agent-img" style="background-color: #c1dbe3;">
+          <h3>Elena R.</h3>
+          <div class="title">First‑home hero</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <div class="agent-tags"><span class="tag">#mentor</span><span class="tag">#patient</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+        <div class="agent-card hover-zoom">
+          <img src="Marcus V.webp" alt="Marcus" class="agent-img" style="background-color: #b8e0d4;">
+          <h3>Marcus V.</h3>
+          <div class="title">Investment pro</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+          <div class="agent-tags"><span class="tag">#ROI</span><span class="tag">#multifamily</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+        <div class="agent-card hover-zoom">
+          <img src="Yuki.webp" alt="Yuki" class="agent-img" style="background-color: #ffe1b5;">
+          <h3>Yuki K.</h3>
+          <div class="title">Waterfront & anime</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <div class="agent-tags"><span class="tag">#ocean</span><span class="tag">#illustrator</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+        <div class="agent-card hover-zoom">
+          <img src="Sofia.webp" alt="Sofia" class="agent-img" style="background-color: #e2cfe8;">
+          <h3>Sofia M.</h3>
+          <div class="title">Eco‑tech specialist</div>
+          <div class="agent-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+          <div class="agent-tags"><span class="tag">#smart home</span><span class="tag">#solar</span></div>
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Profile</a>
+            <a href="#" class="trigger-404" style="background: transparent; border: 1px solid var(--deep-forest); color: var(--deep-forest); padding: 0.4rem 1rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem;">Contact</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- IMAGE SLIDER (team in action) -->
+    <section class="slider-section">
+      <div class="section-header">
+        <h2><i class="fas fa-camera"></i> agents in action <i class="fas fa-camera"></i></h2>
+      </div>
+      <div class="slider-container" id="sliderContainer">
+        <div class="slider-wrapper" id="sliderWrapper">
+          <div class="slide">
+            <div class="slide-image" style="background-image: linear-gradient(145deg, #1e3b32, #c97c5b), url('team1.webp');"></div>
+            <div class="slide-content"><i class="fas fa-quote-left"></i><p>“Naomi showing a forest cabin – her energy is pure anime.”</p><h4>— client review</h4><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--terracotta);">Read more →</a></div>
+          </div>
+          <div class="slide">
+            <div class="slide-image" style="background-image: linear-gradient(145deg, #3d5e55, #e7b89c), url('team2.webp');"></div>
+            <div class="slide-content"><i class="fas fa-quote-left"></i><p>“David closing a luxury deal with rooftop views.”</p><h4>— 2024 top sale</h4><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--terracotta);">Read more →</a></div>
+          </div>
+          <div class="slide">
+            <div class="slide-image" style="background-image: linear-gradient(145deg, #2d4a40, #d4a56c), url('team3.webp');"></div>
+            <div class="slide-content"><i class="fas fa-quote-left"></i><p>“Elena & Marcus at a open house – dream team.”</p><h4>— weekly meet</h4><a href="#" class="trigger-404" style="display: inline-block; margin-top: 1rem; color: var(--terracotta);">Read more →</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="slider-nav">
+        <button id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+        <button id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- SPOTLIGHT SLIDER (latter slider / mini bios) -->
+    <section class="spotlight-slider">
+      <div class="spotlight-container">
+        <div class="spotlight-text slide-left">
+          <h2><i class="fas fa-user-astronaut"></i> agent spotlight</h2>
+          <p>Every month we celebrate one agent's story. This time: <strong>Yuki K.</strong> – she combines anime illustration with real estate, making every tour a magical experience.</p>
+          <div style="margin-top:1.5rem; background: white; padding:1rem; border-radius: 60px;">✨ "I draw the future home for my clients."</div>
+          <div style="margin-top: 1rem;">
+            <a href="#" class="trigger-404" style="background: var(--terracotta); color: white; padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; display: inline-block;">Read full story</a>
+          </div>
+        </div>
+        <div class="spotlight-slider-mini slide-right">
+          <div class="mini-slide"><img src="yuki_small.webp" alt="yuki" style="background:#fbdfd5;"><div><strong>Yuki K.</strong><br>35 listings this year</div><a href="#" class="trigger-404" style="margin-left: auto; color: var(--terracotta);">→</a></div>
+          <div class="mini-slide"><img src="david_small.webp" alt="david" style="background:#dcd0ff;"><div><strong>David Chen</strong><br>waterfront expert</div><a href="#" class="trigger-404" style="margin-left: auto; color: var(--terracotta);">→</a></div>
+          <div class="mini-slide"><img src="elena_small.webp" alt="elena" style="background:#c0e0d5;"><div><strong>Elena R.</strong><br>first‑time buyer champ</div><a href="#" class="trigger-404" style="margin-left: auto; color: var(--terracotta);">→</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER with email validation -->
+    <section class="newsletter-anime">
+      <div class="newsletter-content">
+        <div class="newsletter-text">
+          <h3><i class="fas fa-envelope-open-text"></i> agents mailbox</h3>
+          <p>Get agent stories & new listings monthly.</p>
+        </div>
+        <div class="newsletter-form">
+          <div class="input-group">
+            <input type="email" id="newsletterEmail" placeholder="your.email@example.com" aria-label="Email">
+            <button type="button" id="subscribeNewsletter"><i class="fas fa-paper-plane"></i> Subscribe</button>
+          </div>
+          <div class="email-error" id="emailError"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UPDATED FULLY RESPONSIVE FOOTER -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <div class="footer-logo"><a href="#"><i class="fas fa-tree"></i> Stackly</a></div>
+          <p>Real estate with earthy soul & anime heart. We turn properties into dreams with a splash of color.</p>
+          <div class="social-links">
+            <a href="#" class="trigger-404"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#" class="trigger-404">Listings</a></li>
+            <li><a href="#" class="trigger-404">Agents</a></li>
+            <li><a href="#" class="trigger-404">Open houses</a></li>
+            <li><a href="#" class="trigger-404">Virtual tours</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#" class="trigger-404">Mortgage calc</a></li>
+            <li><a href="#" class="trigger-404">Market stats</a></li>
+            <li><a href="#" class="trigger-404">Buyer guide</a></li>
+            <li><a href="#" class="trigger-404">Seller guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#" class="trigger-404">About us</a></li>
+            <li><a href="#" class="trigger-404">Careers</a></li>
+            <li><a href="#" class="trigger-404">Blog</a></li>
+            <li><a href="#" class="trigger-404">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Stackly — all rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#" class="trigger-404">Privacy</a>
+          <a href="#" class="trigger-404">Terms</a>
+          <a href="#" class="trigger-404">Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 404 PAGE (hidden initially) -->
+  <div id="page404" class="page-404">
+    <h1>404</h1>
+    <h2>page not found</h2>
+    <p>Looks like you wandered off the map. But don't worry, our amazing agents are still here.</p>
+    <button id="backHomeBtn" class="btn-primary"><i class="fas fa-home"></i> Back to agents</button>
+  </div>
+
+  <script>
+    (function() {
+      window.addEventListener('load', function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) { loader.classList.add('loader-hidden'); setTimeout(() => loader.style.display='none', 600); }
+      });
+
+      // mobile nav
+      const toggleBtn = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if(!navLinks.contains(e.target) && !toggleBtn.contains(e.target)) navLinks.classList.remove('active'); });
+      }
+
+      // Mobile dropdown toggle for Home
+      const homeDropdown = document.querySelector('.home-dropdown');
+      if (homeDropdown) {
+        homeDropdown.addEventListener('click', function(e) {
+          // Only for mobile view
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            this.classList.toggle('active-dropdown');
+          }
+        });
+      }
+
+      // image slider
+      const wrapper = document.getElementById('sliderWrapper');
+      const prev = document.getElementById('prevSlide');
+      const next = document.getElementById('nextSlide');
+      if (wrapper && prev && next) {
+        const slides = document.querySelectorAll('.slide');
+        let idx = 0;
+        const update = () => { wrapper.style.transform = `translateX(-${idx * 100}%)`; };
+        next.addEventListener('click', () => { idx = (idx + 1) % slides.length; update(); });
+        prev.addEventListener('click', () => { idx = (idx - 1 + slides.length) % slides.length; update(); });
+        window.addEventListener('resize', update);
+      }
+
+      // 404 REDIRECT for all buttons with class 'trigger-404'
+      const subscribeBtn = document.getElementById('subscribeNewsletter');
+      const emailInput = document.getElementById('newsletterEmail');
+      const emailError = document.getElementById('emailError');
+      const mainContent = document.getElementById('mainContent');
+      const page404 = document.getElementById('page404');
+      const backHomeBtn = document.getElementById('backHomeBtn');
+      
+      // Get all trigger-404 elements
+      const triggerButtons = document.querySelectorAll('.trigger-404');
+      
+      function show404() {
+        mainContent.style.display = 'none';
+        page404.style.display = 'flex';
+        window.scrollTo(0, 0);
+      }
+
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      // Add 404 trigger to all trigger-404 buttons
+      triggerButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          show404();
+        });
+      });
+
+      // Email subscription with validation and 404
+      if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', function() {
+          const email = emailInput.value.trim();
+          if (!email) {
+            emailError.textContent = 'Email address is required.';
+          } else if (!validateEmail(email)) {
+            emailError.textContent = 'Please enter a valid email address.';
+          } else {
+            emailError.textContent = ''; // clear error
+            show404();
+          }
+        });
+      }
+
+      // Back to agents from 404
+      if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', function() {
+          mainContent.style.display = 'block';
+          page404.style.display = 'none';
+          if (emailInput) emailInput.value = '';
+          if (emailError) emailError.textContent = '';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

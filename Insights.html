@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Stackly · insights · market intelligence</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f4f2ef;
+      color: #1e2b2f;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ===== NISE COLOR PALETTE ===== */
+    :root {
+      --primary-slate: #2c4a52;
+      --secondary-sage: #6b8f7a;
+      --tertiary-clay: #b67c6b;
+      --neutral-stone: #d9d0c5;
+      --light-sand: #f0ebe5;
+      --paper-cream: #faf7f2;
+      --charcoal-soft: #3a4a47;
+      --graphite: #2d3a37;
+      --anime-dust: #d1b99b;
+      --mist-blue: #b3c9c9;
+      --soft-shadow: 0 15px 30px -12px rgba(44, 74, 82, 0.15);
+      --transition-smooth: all 0.25s ease;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes floatBuilding {
+      0% { background-position: 0 0; }
+      100% { background-position: 250px 250px; }
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInStats {
+      0% { opacity: 0; transform: translateX(-20px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .fade-up {
+      animation: fadeUp 0.8s ease forwards;
+    }
+    .slide-stat {
+      animation: slideInStats 0.6s ease forwards;
+    }
+
+    /* ===== LOADER ===== */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--paper-cream);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .loader-spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #d9d0c5;
+      border-top-color: var(--tertiary-clay);
+      border-bottom-color: var(--primary-slate);
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-content p {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--primary-slate);
+    }
+
+    /* ===== NAVIGATION with DROPDOWN ===== */
+    .navbar {
+      background-color: #ffffffec;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02);
+      padding: 0.8rem 5%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: var(--primary-slate);
+      text-decoration: none;
+    }
+    .logo i {
+      color: var(--tertiary-clay);
+      font-size: 2rem;
+      transform: rotate(-5deg);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links > li {
+      position: relative;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4e615a;
+      font-size: 1.1rem;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .nav-links a:hover,
+    .nav-links .active-page {
+      border-bottom-color: var(--tertiary-clay);
+      color: var(--primary-slate);
+    }
+
+    /* Home2 Dropdown Style */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 20px;
+      padding: 0.8rem 0;
+      min-width: 160px;
+      box-shadow: var(--soft-shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 1px solid var(--tertiary-clay);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a {
+      padding: 0.6rem 1.5rem;
+      display: block;
+      border-bottom: none !important;
+      color: var(--deep-forest);
+    }
+    .dropdown-menu a:hover {
+      background: var(--tertiary-clay);
+      color: white;
+      border-bottom: none;
+    }
+    .nav-links li:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .nav-actions .btn-outline {
+      border: 1.5px solid var(--primary-slate);
+      background: transparent;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--primary-slate);
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .nav-actions .btn-outline:hover {
+      background: var(--primary-slate);
+      color: white;
+    }
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      color: var(--primary-slate);
+      cursor: pointer;
+    }
+
+    /* ===== INSIGHTS HERO ===== */
+    .insights-hero {
+      background: linear-gradient(105deg, #f0ebe5 0%, #d9d0c5 100%);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 3rem 5% 4rem;
+    }
+    .insights-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.08"><path fill="%232c4a52" d="M40,80 L80,40 L120,60 L160,100 L130,150 L90,130 L50,140 L30,100 Z"/><circle cx="170" cy="40" r="18" fill="%236b8f7a" opacity="0.4"/><rect x="20" y="160" width="35" height="25" fill="%23b67c6b" opacity="0.2"/></svg>');
+      background-size: 260px 260px;
+      background-repeat: repeat;
+      animation: floatBuilding 40s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3rem;
+    }
+    .hero-text {
+      flex: 1 1 350px;
+    }
+    .hero-text h1 {
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--primary-slate);
+      line-height: 1.2;
+    }
+    .hero-text h1 span {
+      color: var(--tertiary-clay);
+      border-bottom: 3px solid var(--secondary-sage);
+    }
+    .hero-text p {
+      font-size: 1.2rem;
+      color: var(--charcoal-soft);
+      max-width: 550px;
+      margin: 1.5rem 0 2rem;
+    }
+    .insight-badge {
+      background: white;
+      padding: 0.6rem 1.8rem;
+      border-radius: 60px;
+      display: inline-block;
+      box-shadow: var(--soft-shadow);
+      font-weight: 500;
+      border: 1px solid var(--neutral-stone);
+    }
+    .insight-badge i {
+      color: var(--tertiary-clay);
+      margin-right: 0.5rem;
+    }
+    .hero-chart {
+      flex: 1 1 300px;
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 2rem;
+      border: 2px solid white;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .chart-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .chart-bar span {
+      width: 70px;
+      font-weight: 600;
+      color: var(--primary-slate);
+    }
+    .bar-line {
+      flex: 1;
+      height: 16px;
+      background: var(--neutral-stone);
+      border-radius: 30px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--tertiary-clay);
+      border-radius: 30px;
+      width: 0%;
+    }
+    .bar-fill.q1 { width: 78%; background: var(--primary-slate); }
+    .bar-fill.q2 { width: 64%; background: var(--secondary-sage); }
+    .bar-fill.q3 { width: 92%; background: var(--tertiary-clay); }
+
+    /* ===== STATS SECTION ===== */
+    .stats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      padding: 3rem 5% 2rem;
+    }
+    .stat-card {
+      flex: 1 1 200px;
+      max-width: 260px;
+      background: white;
+      border-radius: 40px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--soft-shadow);
+      border: 1px solid var(--neutral-stone);
+      transition: var(--transition-smooth);
+    }
+    .stat-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--secondary-sage);
+    }
+    .stat-card i {
+      font-size: 2.8rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1rem;
+    }
+    .stat-card h3 {
+      font-size: 2.2rem;
+      color: var(--primary-slate);
+      font-weight: 700;
+    }
+    .stat-card p {
+      color: var(--charcoal-soft);
+      font-weight: 500;
+    }
+
+    /* ===== MARKET TRENDS ===== */
+    .trends-section {
+      padding: 2rem 5% 3rem;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .section-header h2 {
+      font-size: clamp(2.2rem, 5vw, 3rem);
+      color: var(--primary-slate);
+    }
+    .section-header h2 i {
+      color: var(--tertiary-clay);
+      margin: 0 0.5rem;
+    }
+    .trend-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .trend-item {
+      flex: 1 1 280px;
+      max-width: 340px;
+      background: white;
+      border-radius: 50px;
+      padding: 2rem;
+      box-shadow: var(--soft-shadow);
+      border: 1px solid #e5dfd7;
+      transition: 0.2s;
+    }
+    .trend-item:hover {
+      border-color: var(--secondary-sage);
+    }
+    .trend-item h4 {
+      font-size: 1.6rem;
+      color: var(--primary-slate);
+      margin-bottom: 1rem;
+      border-left: 6px solid var(--tertiary-clay);
+      padding-left: 1rem;
+    }
+    .trend-meta {
+      display: flex;
+      justify-content: space-between;
+      margin: 1.2rem 0;
+      font-weight: 600;
+    }
+    .trend-up { color: #2b7a4b; }
+    .trend-down { color: #b15e5e; }
+    .trend-bar {
+      height: 10px;
+      background: #e0d9d0;
+      border-radius: 20px;
+    }
+    .trend-fill {
+      height: 10px;
+      border-radius: 20px;
+      background: var(--secondary-sage);
+    }
+
+    /* ===== REPORT CARDS (with clickable PDF badges) ===== */
+    .reports-section {
+      background: var(--light-sand);
+      padding: 3rem 5%;
+      border-radius: 80px 80px 0 0;
+      margin-top: 2rem;
+    }
+    .report-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .report-card {
+      flex: 1 1 260px;
+      max-width: 320px;
+      background: white;
+      border-radius: 40px;
+      padding: 2rem;
+      box-shadow: var(--soft-shadow);
+      transition: 0.2s;
+      border: 1px solid transparent;
+    }
+    .report-card:nth-child(1) { border-top: 8px solid var(--primary-slate); }
+    .report-card:nth-child(2) { border-top: 8px solid var(--secondary-sage); }
+    .report-card:nth-child(3) { border-top: 8px solid var(--tertiary-clay); }
+    .report-card:nth-child(4) { border-top: 8px solid var(--anime-dust); }
+    .report-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--neutral-stone);
+    }
+    .report-card i {
+      font-size: 2.5rem;
+      color: var(--primary-slate);
+      margin-bottom: 1rem;
+    }
+    .report-card h4 {
+      font-size: 1.5rem;
+      color: var(--primary-slate);
+    }
+    .report-card p {
+      margin: 0.8rem 0 1.5rem;
+      color: #4f625b;
+    }
+    .badge-pdf {
+      background: var(--secondary-sage);
+      color: white;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      display: inline-block;
+      cursor: pointer;
+      transition: 0.2s;
+      border: none;
+    }
+    .badge-pdf:hover {
+      background: var(--tertiary-clay);
+      transform: scale(1.05);
+    }
+
+    /* ===== NEWSLETTER ===== */
+    .newsletter-section {
+      background: var(--primary-slate);
+      margin: 3rem 5%;
+      border-radius: 80px;
+      padding: 3rem 5%;
+      color: white;
+    }
+    .newsletter-flex {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .newsletter-text h3 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    .newsletter-text i {
+      color: var(--anime-dust);
+      margin-right: 0.5rem;
+    }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .input-group input {
+      flex: 1 1 220px;
+      padding: 1rem 1.8rem;
+      border: none;
+      border-radius: 60px;
+      font-size: 1rem;
+    }
+    .input-group button {
+      background: var(--tertiary-clay);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .input-group button:hover {
+      background: #9f6b5a;
+    }
+    .email-error {
+      color: #ffddd6;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      min-height: 1.4rem;
+    }
+
+    /* ===== 404 PAGE ===== */
+    .page-404 {
+      display: none;
+      text-align: center;
+      padding: 5rem 5%;
+      min-height: 70vh;
+      background: var(--paper-cream);
+      border-radius: 80px;
+      margin: 2rem 5%;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .page-404 h1 {
+      font-size: 6rem;
+      color: var(--primary-slate);
+      line-height: 1;
+    }
+    .page-404 h2 {
+      font-size: 2.5rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1.5rem;
+    }
+    .page-404 p {
+      font-size: 1.2rem;
+      color: var(--charcoal-soft);
+      max-width: 500px;
+      margin-bottom: 2rem;
+    }
+    .btn-primary {
+      background: var(--tertiary-clay);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.2s;
+      box-shadow: 0 10px 18px -8px #8f5e4e;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #9f6b5a;
+      transform: scale(1.02);
+    }
+
+    /* ===== FOOTER (ULTRA RESPONSIVE + SOCIAL ICONS PERFECT) ===== */
+    .footer {
+      background: #2c3a37;
+      color: #e0e9e0;
+      padding: 3rem 5% 2rem;
+      margin-top: 3rem;
+      border-top: 6px solid var(--tertiary-clay);
+    }
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: space-between;
+    }
+    .footer-col {
+      flex: 1 1 160px;
+      min-width: 150px;
+    }
+    .footer-col.brand-col {
+      flex: 2 1 300px;
+    }
+    .footer-logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+      font-weight: 600;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .footer-logo i {
+      color: var(--anime-dust);
+    }
+    .footer-col p {
+      margin: 1rem 0 1.5rem;
+      opacity: 0.8;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    /* SOCIAL ICONS - FULLY RESPONSIVE */
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .social-links a {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .social-links a:hover {
+      background: var(--tertiary-clay);
+      color: #1e2b2f;
+      transform: translateY(-5px);
+    }
+    .footer-col h4 {
+      color: white;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid var(--tertiary-clay);
+      padding-left: 0.8rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 0.8rem;
+    }
+    .footer-col a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .footer-col a:hover {
+      color: var(--anime-dust);
+      transform: translateX(5px);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 3rem;
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-bottom-links a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--anime-dust);
+    }
+
+    /* ===== IMPROVED MOBILE DROPDOWN ===== */
+    @media screen and (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+        background: white;
+        padding: 1rem 0;
+        border-radius: 24px;
+        text-align: center;
+        gap: 0rem;
+        box-shadow: 0 20px 30px rgba(0,0,0,0.05);
+      }
+      .nav-links.active { display: flex; }
+      .nav-links > li { 
+        width: 100%; 
+        margin: 0.2rem 0;
+      }
+      .nav-links a {
+        padding: 0.8rem;
+        justify-content: center;
+      }
+      
+      /* Dropdown in mobile - show on click/tap */
+      .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        margin: 0.5rem auto;
+        background: var(--soft-clay);
+        display: none;
+        width: 90%;
+        border-radius: 15px;
+      }
+      .dropdown-menu a {
+        color: var(--primary-slate);
+        padding: 0.8rem;
+      }
+      /* Show dropdown when parent has active class (added via JavaScript) */
+      .nav-links li.active-dropdown .dropdown-menu {
+        display: block;
+      }
+      
+      .hero-content { gap: 2rem; }
+      .hero-chart { padding: 1.5rem; }
+      
+      .stat-card { max-width: 100%; }
+      
+      .trend-item { max-width: 100%; }
+      
+      .reports-section { border-radius: 40px 40px 0 0; }
+      
+      .newsletter-flex { flex-direction: column; text-align: center; }
+      .input-group { justify-content: center; }
+      
+      /* footer responsive - all columns stack */
+      .footer-grid {
+        flex-direction: column;
+        gap: 2.5rem;
+      }
+      .footer-col {
+        min-width: 100%;
+        text-align: center;
+      }
+      .footer-col.brand-col p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      /* social icons center and wrap nicely */
+      .social-links {
+        justify-content: center;
+        gap: 1rem;
+      }
+      .social-links a {
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
+      }
+      .footer-col h4 {
+        text-align: center;
+        border-left: none;
+        border-bottom: 2px solid var(--tertiary-clay);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-bottom-links {
+        justify-content: center;
+        gap: 1.5rem;
+      }
+    }
+
+    /* extra small devices */
+    @media screen and (max-width: 480px) {
+      .stat-card { padding: 1.5rem; }
+      .report-card { padding: 1.5rem; }
+      .input-group button { width: 100%; }
+      
+      /* social icons adjust beautifully */
+      .social-links {
+        gap: 0.7rem;
+      }
+      .social-links a {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADER -->
+  <div id="loader-wrapper">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p><i class="fas fa-chart-line"></i> Stackly · insights loading <i class="fas fa-leaf"></i></p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT (visible by default) -->
+  <div id="mainContent">
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html"><i class="fas fa-tree logo-icon"></i> <span>Stackly</span></a>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- Home with Dropdown (Home2 style) -->
+        <li class="home-dropdown">
+          <a href="index.html" class="home-link">Home <i class="fas fa-chevron-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="index.html">Home1</a></li>
+            <li><a href="home2.html">Home2</a></li>
+            <!-- <li><a href="home3.html">Home Style 3</a></li> -->
+          </ul>
+        </li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="Insights.html" class="active-page">Insights</a></li>
+        <li><a href="Contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="sign in.html" class="btn-outline"><i class="fas fa-user"></i> Sign in</a>
+        <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="insights-hero">
+      <div class="hero-content">
+        <div class="hero-text fade-up">
+          <h1><span>market insights</span> <i class="fas fa-chart-pie"></i><br>data with soul</h1>
+          <p>Quarterly analysis · price trends · local intelligence · designed for clarity</p>
+          <div class="insight-badge"><i class="fas fa-calendar-alt"></i> Q1 2025 update</div>
+        </div>
+        <div class="hero-chart slide-stat">
+          <div class="chart-bar"><span>East</span><div class="bar-line"><div class="bar-fill q1"></div></div><span>+7.8%</span></div>
+          <div class="chart-bar"><span>West</span><div class="bar-line"><div class="bar-fill q2"></div></div><span>+5.2%</span></div>
+          <div class="chart-bar"><span>Central</span><div class="bar-line"><div class="bar-fill q3"></div></div><span>+11.3%</span></div>
+          <p style="margin-top:0.8rem; color:var(--primary-slate);"><i class="fas fa-arrow-up"></i> year over year growth</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS CARDS -->
+    <div class="stats-container">
+      <div class="stat-card slide-stat" style="animation-delay:0.1s"><i class="fas fa-house-chimney"></i><h3>2,146</h3><p>homes sold this month</p></div>
+      <div class="stat-card slide-stat" style="animation-delay:0.2s"><i class="fas fa-chart-line"></i><h3>$485k</h3><p>median price (+6.2%)</p></div>
+      <div class="stat-card slide-stat" style="animation-delay:0.3s"><i class="fas fa-clock"></i><h3>32 days</h3><p>avg days on market</p></div>
+      <div class="stat-card slide-stat" style="animation-delay:0.4s"><i class="fas fa-percent"></i><h3>4.8%</h3><p>inventory increase</p></div>
+    </div>
+
+    <!-- MARKET TRENDS -->
+    <section class="trends-section">
+      <div class="section-header">
+        <h2><i class="fas fa-wave-square"></i> regional trends <i class="fas fa-wave-square"></i></h2>
+        <p style="color: #4f625b;">northeast · southwest · central · coastal</p>
+      </div>
+      <div class="trend-grid">
+        <div class="trend-item">
+          <h4>🏔️ Mountain</h4>
+          <div class="trend-meta"><span>+9.2%</span> <span class="trend-up"><i class="fas fa-arrow-up"></i> hot</span></div>
+          <div class="trend-bar"><div class="trend-fill" style="width:82%"></div></div>
+          <p style="margin-top:1rem;">demand high, inventory low</p>
+        </div>
+        <div class="trend-item">
+          <h4>🌊 Coastal</h4>
+          <div class="trend-meta"><span>+4.5%</span> <span class="trend-down"><i class="fas fa-arrow-down"></i> cooling</span></div>
+          <div class="trend-bar"><div class="trend-fill" style="width:48%"></div></div>
+          <p style="margin-top:1rem;">more listings, stable prices</p>
+        </div>
+        <div class="trend-item">
+          <h4>🌲 Forest</h4>
+          <div class="trend-meta"><span>+12.1%</span> <span class="trend-up"><i class="fas fa-arrow-up"></i> booming</span></div>
+          <div class="trend-bar"><div class="trend-fill" style="width:95%"></div></div>
+          <p style="margin-top:1rem;">eco‑homes in high demand</p>
+        </div>
+        <div class="trend-item">
+          <h4>🏙️ Urban</h4>
+          <div class="trend-meta"><span>+3.8%</span> <span class="trend-down"><i class="fas fa-arrow-right"></i> steady</span></div>
+          <div class="trend-bar"><div class="trend-fill" style="width:60%"></div></div>
+          <p style="margin-top:1rem;">loft conversions rising</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS SECTION with clickable PDF badges -->
+    <section class="reports-section">
+      <div class="section-header">
+        <h2><i class="fas fa-file-alt"></i> latest reports <i class="fas fa-file-alt"></i></h2>
+        <p style="color: #4f625b;">download full analyses</p>
+      </div>
+      <div class="report-grid">
+        <div class="report-card">
+          <i class="fas fa-city"></i>
+          <h4>Metro 2025</h4>
+          <p>deep dive into 12 major cities</p>
+          <button class="badge-pdf pdf-trigger"><i class="fas fa-file-pdf"></i> PDF 4.2 MB</button>
+        </div>
+        <div class="report-card">
+          <i class="fas fa-leaf"></i>
+          <h4>Eco‑home index</h4>
+          <p>green building trends & savings</p>
+          <button class="badge-pdf pdf-trigger"><i class="fas fa-file-pdf"></i> PDF 3.1 MB</button>
+        </div>
+        <div class="report-card">
+          <i class="fas fa-chart-scatter"></i>
+          <h4>Investment outlook</h4>
+          <p>rental yields & cap rates</p>
+          <button class="badge-pdf pdf-trigger"><i class="fas fa-file-pdf"></i> PDF 5.7 MB</button>
+        </div>
+        <div class="report-card">
+          <i class="fas fa-mountain"></i>
+          <h4>Mountain report</h4>
+          <p>second homes & cabins</p>
+          <button class="badge-pdf pdf-trigger"><i class="fas fa-file-pdf"></i> PDF 2.8 MB</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter-section">
+      <div class="newsletter-flex">
+        <div class="newsletter-text">
+          <h3><i class="fas fa-envelope-open-text"></i> insight letter</h3>
+          <p>Monthly data, charts, and anime‑style visuals.</p>
+        </div>
+        <div class="newsletter-form">
+          <div class="input-group">
+            <input type="email" id="insightsEmail" placeholder="your.email@example.com" aria-label="Email">
+            <button type="button" id="subscribeInsights"><i class="fas fa-paper-plane"></i> Subscribe</button>
+          </div>
+          <div class="email-error" id="emailErrorInsights"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER (fully responsive + social icons perfect) -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <div class="footer-logo"><a href="#"><i class="fas fa-tree"></i> Stackly</a></div>
+          <p>Real estate with earthy soul & data intelligence. We turn properties into dreams with a splash of color.</p>
+          <div class="social-links">
+            <a href="#" class="trigger-404"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="trigger-404"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+           <li><a href="#" class="trigger-404">Listings</a></li>
+            <li><a href="#" class="trigger-404">Agents</a></li>
+            <li><a href="#" class="trigger-404">Open houses</a></li>
+            <li><a href="#" class="trigger-404">Virtual tours</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#" class="trigger-404">Mortgage calc</a></li>
+            <li><a href="#" class="trigger-404">Market stats</a></li>
+            <li><a href="#" class="trigger-404">Buyer guide</a></li>
+            <li><a href="#" class="trigger-404">Seller guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+             <li><a href="#" class="trigger-404">About us</a></li>
+            <li><a href="#" class="trigger-404">Careers</a></li>
+            <li><a href="#" class="trigger-404">Blog</a></li>
+            <li><a href="#" class="trigger-404">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Stackly — all rights reserved.</span>
+        <div class="footer-bottom-links">
+         <a href="#" class="trigger-404">Privacy</a>
+          <a href="#" class="trigger-404">Terms</a>
+          <a href="#" class="trigger-404">Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 404 PAGE (hidden initially) -->
+  <div id="page404" class="page-404">
+    <h1>404</h1>
+    <h2>page not found</h2>
+    <p>Looks like you wandered off the map. But don't worry, our insights are still here.</p>
+    <button id="backHomeBtn" class="btn-primary"><i class="fas fa-home"></i> Back to insights</button>
+  </div>
+
+  <script>
+    (function() {
+      // loader
+      window.addEventListener('load', function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) { loader.classList.add('loader-hidden'); setTimeout(() => loader.style.display='none', 600); }
+      });
+
+      // mobile nav
+      const toggleBtn = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if(!navLinks.contains(e.target) && !toggleBtn.contains(e.target)) navLinks.classList.remove('active'); });
+      }
+
+      // Mobile dropdown toggle for Home
+      const homeDropdown = document.querySelector('.home-dropdown');
+      if (homeDropdown) {
+        homeDropdown.addEventListener('click', function(e) {
+          // Only for mobile view
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            this.classList.toggle('active-dropdown');
+          }
+        });
+      }
+
+      // EMAIL VALIDATION + 404 REDIRECT
+      const subscribeBtn = document.getElementById('subscribeInsights');
+      const emailInput = document.getElementById('insightsEmail');
+      const emailError = document.getElementById('emailErrorInsights');
+      const mainContent = document.getElementById('mainContent');
+      const page404 = document.getElementById('page404');
+      const backHomeBtn = document.getElementById('backHomeBtn');
+
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      if (subscribeBtn) {
+        subscribeBtn.addEventListener('click', function() {
+          const email = emailInput.value.trim();
+          if (!email) {
+            emailError.textContent = 'Email address is required.';
+          } else if (!validateEmail(email)) {
+            emailError.textContent = 'Please enter a valid email address.';
+          } else {
+            emailError.textContent = '';
+            mainContent.style.display = 'none';
+            page404.style.display = 'flex';
+            window.scrollTo(0, 0);
+          }
+        });
+      }
+
+      // Back to insights from 404
+      if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          mainContent.style.display = 'block';
+          page404.style.display = 'none';
+          emailInput.value = '';
+          emailError.textContent = '';
+        });
+      }
+
+      // PDF BUTTONS -> 404 PAGE (all buttons with class 'pdf-trigger')
+      const pdfButtons = document.querySelectorAll('.pdf-trigger');
+      pdfButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          mainContent.style.display = 'none';
+          page404.style.display = 'flex';
+          window.scrollTo(0, 0);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

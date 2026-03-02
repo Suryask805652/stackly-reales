@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Stackly · sign in / join · anime nise</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #f4f2ef;
+      color: #1e2b2f;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ===== NISE COLOR PALETTE (professional + anime) ===== */
+    :root {
+      --primary-slate: #2c4a52;
+      --secondary-sage: #6b8f7a;
+      --tertiary-clay: #b67c6b;
+      --neutral-stone: #d9d0c5;
+      --light-sand: #f0ebe5;
+      --paper-cream: #faf7f2;
+      --charcoal-soft: #3a4a47;
+      --graphite: #2d3a37;
+      --anime-dust: #d1b99b;
+      --mist-blue: #b3c9c9;
+      --soft-shadow: 0 15px 30px -12px rgba(44, 74, 82, 0.15);
+      --transition-smooth: all 0.25s ease;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes floatBuilding {
+      0% { background-position: 0 0; }
+      100% { background-position: 250px 250px; }
+    }
+    @keyframes fadeUp {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes gentleJump {
+      0%, 100% { transform: translateY(0); }
+      25% { transform: translateY(-6px); }
+      50% { transform: translateY(2px); }
+      75% { transform: translateY(-2px); }
+    }
+    @keyframes slideInLeft {
+      0% { opacity: 0; transform: translateX(-30px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes slideInRight {
+      0% { opacity: 0; transform: translateX(30px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    .jump-text {
+      display: inline-block;
+      animation: gentleJump 1.2s ease 2;
+    }
+    .slide-left {
+      animation: slideInLeft 0.7s ease forwards;
+    }
+    .slide-right {
+      animation: slideInRight 0.7s ease forwards;
+    }
+    .fade-up {
+      animation: fadeUp 0.8s ease forwards;
+    }
+
+    /* ===== LOADER ===== */
+    #loader-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--paper-cream);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+    .loader-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .loader-spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid #d9d0c5;
+      border-top-color: var(--tertiary-clay);
+      border-bottom-color: var(--primary-slate);
+      border-radius: 50%;
+      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      margin: 0 auto 1.5rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .loader-content p {
+      font-size: 1.4rem;
+      font-weight: 400;
+      color: var(--primary-slate);
+    }
+
+    /* ===== NAVIGATION with DROPDOWN ===== */
+    .navbar {
+      background-color: #ffffffec;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.02);
+      padding: 0.8rem 5%;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.7rem;
+      font-weight: 600;
+      color: var(--primary-slate);
+      text-decoration: none;
+    }
+    .logo i {
+      color: var(--tertiary-clay);
+      font-size: 2rem;
+      transform: rotate(-5deg);
+    }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links > li {
+      position: relative;
+    }
+    .nav-links a {
+      text-decoration: none;
+      font-weight: 500;
+      color: #4e615a;
+      font-size: 1.1rem;
+      padding: 0.5rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .nav-links a:hover,
+    .nav-links .active-page {
+      border-bottom-color: var(--tertiary-clay);
+      color: var(--primary-slate);
+    }
+
+    /* Home2 Dropdown Style */
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border-radius: 20px;
+      padding: 0.8rem 0;
+      min-width: 160px;
+      box-shadow: var(--soft-shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      border: 1px solid var(--tertiary-clay);
+    }
+    .dropdown-menu li {
+      list-style: none;
+    }
+    .dropdown-menu a {
+      padding: 0.6rem 1.5rem;
+      display: block;
+      border-bottom: none !important;
+      color: var(--deep-forest);
+    }
+    .dropdown-menu a:hover {
+      background: var(--tertiary-clay);
+      color: white;
+      border-bottom: none;
+    }
+    .nav-links li:hover .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .nav-actions .btn-outline {
+      border: 1.5px solid var(--primary-slate);
+      background: transparent;
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: var(--primary-slate);
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .nav-actions .btn-outline:hover {
+      background: var(--primary-slate);
+      color: white;
+    }
+    .menu-toggle {
+      display: none;
+      font-size: 1.8rem;
+      color: var(--primary-slate);
+      cursor: pointer;
+    }
+
+    /* ===== HERO / AUTH BACKGROUND (anime style) ===== */
+    .auth-hero {
+      background: linear-gradient(135deg, #f0ebe5 0%, #d1b99b 30%, #b3c9c9 70%, #6b8f7a 100%);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 3rem 5% 5rem;
+    }
+    .auth-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.1"><path fill="%23b67c6b" d="M59.5,49.5 L80,20 L100.5,49.5 L140,60 L110,90 L115,135 L80,115 L45,135 L50,90 L20,60 Z"/><circle cx="150" cy="70" r="18" fill="%236b8f7a"/><rect x="30" y="150" width="40" height="30" fill="%232c4a52" opacity="0.2"/><circle cx="30" cy="40" r="25" fill="%23b3c9c9" opacity="0.2"/></svg>');
+      background-size: 240px 240px;
+      background-repeat: repeat;
+      animation: floatBuilding 45s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .auth-hero::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 30% 40%, rgba(210,180,140,0.2) 0%, transparent 40%),
+                  radial-gradient(circle at 80% 70%, rgba(100,130,120,0.2) 0%, transparent 40%);
+      top: 0;
+      z-index: 0;
+    }
+    .auth-content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .auth-text {
+      flex: 1 1 350px;
+    }
+    .auth-text h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 700;
+      color: var(--primary-slate);
+      line-height: 1.2;
+    }
+    .auth-text h1 span {
+      color: var(--tertiary-clay);
+      border-bottom: 4px dotted var(--secondary-sage);
+    }
+    .auth-text p {
+      font-size: 1.2rem;
+      color: var(--charcoal-soft);
+      max-width: 500px;
+      margin: 1.5rem 0 2rem;
+    }
+    .floating-badge {
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(8px);
+      padding: 0.8rem 2rem;
+      border-radius: 60px;
+      display: inline-block;
+      border: 1px solid white;
+    }
+
+    /* ===== AUTH CARD (sliding panel) ===== */
+    .auth-card {
+      flex: 1 1 400px;
+      max-width: 480px;
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 70px;
+      padding: 2.5rem;
+      box-shadow: var(--soft-shadow);
+      border: 2px solid rgba(255,255,255,0.8);
+      transition: transform 0.3s;
+    }
+    .auth-card:hover {
+      transform: translateY(-8px);
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--neutral-stone);
+      padding-bottom: 1rem;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: var(--charcoal-soft);
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 0.5rem;
+      border-radius: 40px;
+    }
+    .auth-tab.active {
+      background: var(--tertiary-clay);
+      color: white;
+    }
+    .auth-tab:not(.active):hover {
+      color: var(--primary-slate);
+      background: rgba(182,124,107,0.1);
+    }
+
+    /* form toggling */
+    .auth-form {
+      display: block;
+    }
+    .auth-form.hidden {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--primary-slate);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      border: 2px solid var(--neutral-stone);
+      border-radius: 60px;
+      font-size: 1rem;
+      transition: 0.2s;
+      background: white;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--tertiary-clay);
+    }
+    .auth-btn {
+      background: var(--tertiary-clay);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 1rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1.1rem;
+      width: 100%;
+      margin: 1rem 0;
+    }
+    .auth-btn:hover {
+      background: #9f6b5a;
+    }
+    .auth-divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      color: var(--charcoal-soft);
+      position: relative;
+    }
+    .auth-divider::before,
+    .auth-divider::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 45%;
+      height: 1px;
+      background: var(--neutral-stone);
+    }
+    .auth-divider::before { left: 0; }
+    .auth-divider::after { right: 0; }
+    .social-login {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .social-btn {
+      background: white;
+      border: 1px solid var(--neutral-stone);
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--primary-slate);
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .social-btn:hover {
+      background: var(--tertiary-clay);
+      color: white;
+      transform: translateY(-5px);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: var(--charcoal-soft);
+    }
+    .auth-footer a {
+      color: var(--tertiary-clay);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .error-message {
+      color: #b15e5e;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      min-height: 1.4rem;
+    }
+
+    /* ===== FEATURES SLIDER (latter slider) ===== */
+    .features-slider {
+      background: var(--light-sand);
+      padding: 3rem 5%;
+      border-radius: 80px 80px 0 0;
+      margin-top: -2rem;
+      position: relative;
+    }
+    .slider-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    .slider-header h2 {
+      font-size: 2.5rem;
+      color: var(--primary-slate);
+    }
+    .slider-header h2 i {
+      color: var(--tertiary-clay);
+    }
+    .slider-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .feature-slide {
+      flex: 1 1 250px;
+      max-width: 280px;
+      background: white;
+      border-radius: 50px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: var(--soft-shadow);
+      transition: 0.3s;
+      border: 1px solid transparent;
+    }
+    .feature-slide:nth-child(1) { border-bottom: 8px solid var(--primary-slate); }
+    .feature-slide:nth-child(2) { border-bottom: 8px solid var(--secondary-sage); }
+    .feature-slide:nth-child(3) { border-bottom: 8px solid var(--tertiary-clay); }
+    .feature-slide:nth-child(4) { border-bottom: 8px solid var(--anime-dust); }
+    .feature-slide:hover {
+      transform: translateY(-12px);
+      border-color: var(--neutral-stone);
+    }
+    .feature-slide i {
+      font-size: 3rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1rem;
+    }
+    .feature-slide h3 {
+      font-size: 1.6rem;
+      color: var(--primary-slate);
+    }
+
+    /* ===== 404 PAGE (hidden) ===== */
+    .page-404 {
+      display: none;
+      text-align: center;
+      padding: 5rem 5%;
+      min-height: 70vh;
+      background: var(--paper-cream);
+      border-radius: 80px;
+      margin: 2rem 5%;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .page-404 h1 {
+      font-size: 6rem;
+      color: var(--primary-slate);
+    }
+    .page-404 h2 {
+      font-size: 2.5rem;
+      color: var(--tertiary-clay);
+      margin-bottom: 1.5rem;
+    }
+    .btn-primary {
+      background: var(--tertiary-clay);
+      color: white;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ===== FOOTER (FULLY RESPONSIVE with stacked columns & centered social) ===== */
+    .footer {
+      background: #2c3a37;
+      color: #e0e9e0;
+      padding: 3rem 5% 2rem;
+      margin-top: 3rem;
+      border-top: 6px solid var(--tertiary-clay);
+    }
+    .footer-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2.5rem;
+      justify-content: space-between;
+    }
+    .footer-col {
+      flex: 1 1 160px;
+      min-width: 150px;
+    }
+    .footer-col.brand-col {
+      flex: 2 1 300px;
+    }
+    .footer-logo a {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 2rem;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .footer-logo i {
+      color: var(--anime-dust);
+    }
+    .footer-col p {
+      margin: 1rem 0 1.5rem;
+      opacity: 0.8;
+      max-width: 320px;
+      line-height: 1.6;
+    }
+    /* SOCIAL ICONS - FULLY RESPONSIVE */
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+    .social-links a {
+      color: white;
+      background: rgba(255,255,255,0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .social-links a:hover {
+      background: var(--tertiary-clay);
+      color: #1e2b2f;
+      transform: translateY(-5px);
+    }
+    .footer-col h4 {
+      color: white;
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      border-left: 4px solid var(--tertiary-clay);
+      padding-left: 0.8rem;
+    }
+    .footer-col ul {
+      list-style: none;
+    }
+    .footer-col li {
+      margin-bottom: 0.8rem;
+    }
+    .footer-col a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+      display: inline-block;
+    }
+    .footer-col a:hover {
+      color: var(--anime-dust);
+      transform: translateX(5px);
+    }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-top: 3rem;
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-bottom-links a {
+      color: #cbdcd0;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--anime-dust);
+    }
+
+    /* ===== IMPROVED MOBILE DROPDOWN ===== */
+    @media screen and (max-width: 768px) {
+      .menu-toggle { display: block; }
+      .nav-links {
+        display: none;
+        width: 100%;
+        order: 3;
+        flex-direction: column;
+        background: white;
+        padding: 1rem 0;
+        border-radius: 24px;
+        text-align: center;
+        gap: 0rem;
+        box-shadow: 0 20px 30px rgba(0,0,0,0.05);
+      }
+      .nav-links.active { display: flex; }
+      .nav-links > li { 
+        width: 100%; 
+        margin: 0.2rem 0;
+      }
+      .nav-links a {
+        padding: 0.8rem;
+        justify-content: center;
+      }
+      
+      /* Dropdown in mobile - show on click/tap */
+      .dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        margin: 0.5rem auto;
+        background: var(--soft-clay);
+        display: none;
+        width: 90%;
+        border-radius: 15px;
+      }
+      .dropdown-menu a {
+        color: var(--primary-slate);
+        padding: 0.8rem;
+      }
+      /* Show dropdown when parent has active class (added via JavaScript) */
+      .nav-links li.active-dropdown .dropdown-menu {
+        display: block;
+      }
+      
+      .auth-content { gap: 2rem; }
+      .auth-card { max-width: 100%; }
+      
+      .slider-grid { gap: 1.5rem; }
+      .feature-slide { max-width: 100%; }
+      
+      /* FOOTER FULLY RESPONSIVE */
+      .footer-grid {
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .footer-col {
+        min-width: 100%;
+        text-align: center;
+      }
+      .footer-col.brand-col p {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer-col h4 {
+        text-align: center;
+        border-left: none;
+        border-bottom: 2px solid var(--tertiary-clay);
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .social-links {
+        justify-content: center;
+        gap: 1rem;
+      }
+      .social-links a {
+        width: 48px;
+        height: 48px;
+        font-size: 1.4rem;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+      }
+      .footer-bottom-links {
+        justify-content: center;
+        gap: 1.5rem;
+      }
+    }
+
+    /* extra small devices */
+    @media screen and (max-width: 480px) {
+      .auth-card { padding: 1.8rem; }
+      .auth-tab { font-size: 1.1rem; }
+      .social-btn { width: 48px; height: 48px; }
+      .feature-slide { padding: 1.5rem; }
+      
+      .social-links a {
+        width: 42px;
+        height: 42px;
+        font-size: 1.2rem;
+      }
+      .footer-bottom-links {
+        gap: 1rem;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LOADER -->
+  <div id="loader-wrapper">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p><i class="fas fa-leaf"></i> Stackly · welcome <i class="fas fa-smile"></i></p>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent">
+    <nav class="navbar">
+      <div class="logo">
+        <a href="index.html"><i class="fas fa-tree logo-icon"></i> <span>Stackly</span></a>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <!-- Home with Dropdown (Home2 style) -->
+        <li class="home-dropdown">
+          <a href="index.html" class="home-link">Home <i class="fas fa-chevron-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="index.html">Home1</a></li>
+            <li><a href="home2.html">Home2</a></li>
+            <!-- <li><a href="home3.html">Home Style 3</a></li> -->
+          </ul>
+        </li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="agents.html">Agents</a></li>
+        <li><a href="insights.html">Insights</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="#" class="active-page">Sign up</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="btn-outline" id="signInBtn"><i class="fas fa-user"></i> Sign in</button>
+        <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      </div>
+    </nav>
+
+    <!-- AUTH HERO with anime bg + sliding panels -->
+    <section class="auth-hero">
+      <div class="auth-content">
+        <div class="auth-text slide-left">
+          <h1><span class="jump-text">welcome</span> to Stackly <i class="fas fa-feather"></i></h1>
+          <p>Join the community where real estate meets anime soul. Save favorites, get insights, and connect with agents.</p>
+          <div class="floating-badge">
+            <i class="fas fa-star" style="color: var(--tertiary-clay);"></i>  over 2000 happy members
+          </div>
+        </div>
+
+        <!-- AUTH CARD (sliding right) -->
+        <div class="auth-card slide-right">
+          <div class="auth-tabs">
+            <div class="auth-tab active" id="loginTab">Log in</div>
+            <div class="auth-tab" id="signupTab">Sign up</div>
+          </div>
+
+          <!-- LOGIN FORM -->
+          <div class="auth-form" id="loginForm">
+            <div class="form-group">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" placeholder="your@email.com">
+              <div class="error-message" id="loginEmailError"></div>
+            </div>
+            <div class="form-group">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" placeholder="••••••••">
+              <div class="error-message" id="loginPasswordError"></div>
+            </div>
+            <button class="auth-btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Log in</button>
+            <div class="auth-divider">or</div>
+            <div class="social-login">
+              <div class="social-btn"><i class="fab fa-google"></i></div>
+              <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+              <div class="social-btn"><i class="fab fa-apple"></i></div>
+            </div>
+            <div class="auth-footer">Don't have an account? <a href="#" id="switchToSignup">Sign up</a></div>
+          </div>
+
+          <!-- SIGNUP FORM (hidden by default) -->
+          <div class="auth-form hidden" id="signupForm">
+            <div class="form-group">
+              <label for="signupName">Full name</label>
+              <input type="text" id="signupName" placeholder="Alex Kim">
+              <div class="error-message" id="signupNameError"></div>
+            </div>
+            <div class="form-group">
+              <label for="signupEmail">Email</label>
+              <input type="email" id="signupEmail" placeholder="alex@example.com">
+              <div class="error-message" id="signupEmailError"></div>
+            </div>
+            <div class="form-group">
+              <label for="signupPassword">Password</label>
+              <input type="password" id="signupPassword" placeholder="at least 8 characters">
+              <div class="error-message" id="signupPasswordError"></div>
+            </div>
+            <button class="auth-btn" id="signupBtn"><i class="fas fa-user-plus"></i> Create account</button>
+            <div class="auth-divider">or</div>
+            <div class="social-login">
+              <div class="social-btn"><i class="fab fa-google"></i></div>
+              <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
+              <div class="social-btn"><i class="fab fa-apple"></i></div>
+            </div>
+            <div class="auth-footer">Already have an account? <a href="#" id="switchToLogin">Log in</a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES SLIDER (latter slider) -->
+    <section class="features-slider">
+      <div class="slider-header">
+        <h2><i class="fas fa-sliders-h"></i> why join Stackly <i class="fas fa-sliders-h"></i></h2>
+        <p style="color: var(--charcoal-soft);">anime‑inspired perks</p>
+      </div>
+      <div class="slider-grid">
+        <div class="feature-slide slide-left"><i class="fas fa-heart"></i><h3>favorites</h3><p>save listings with anime style</p></div>
+        <div class="feature-slide slide-left" style="animation-delay:0.1s"><i class="fas fa-bell"></i><h3>alerts</h3><p>get new matches instantly</p></div>
+        <div class="feature-slide slide-right" style="animation-delay:0.1s"><i class="fas fa-chart-pie"></i><h3>insights</h3><p>exclusive market data</p></div>
+        <div class="feature-slide slide-right"><i class="fas fa-user-ninja"></i><h3>agents</h3><p>direct chat with pros</p></div>
+      </div>
+    </section>
+
+    <!-- FOOTER (FULLY RESPONSIVE) -->
+    <footer class="footer">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <div class="footer-logo"><a href="#"><i class="fas fa-tree"></i> Stackly</a></div>
+          <p>Real estate with earthy soul & anime heart. We turn properties into dreams with a splash of color.</p>
+          <div class="social-links">
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#">Listings</a></li>
+            <li><a href="#">Agents</a></li>
+            <li><a href="#">Insights</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Mortgage calc</a></li>
+            <li><a href="#">Market stats</a></li>
+            <li><a href="#">Buyer guide</a></li>
+            <li><a href="#">Seller guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2025 Stackly — all rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Accessibility</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 404 PAGE (demo redirect) -->
+  <div id="page404" class="page-404">
+    <h1>404</h1>
+    <h2>demo mode</h2>
+    <p>Authentication simulation. In a real app you'd be redirected.</p>
+    <button id="backHomeBtn" class="btn-primary"><i class="fas fa-undo-alt"></i> back</button>
+  </div>
+
+  <script>
+    (function() {
+      // loader
+      window.addEventListener('load', function() {
+        const loader = document.getElementById('loader-wrapper');
+        if (loader) { loader.classList.add('loader-hidden'); setTimeout(() => loader.style.display='none', 600); }
+      });
+
+      // mobile nav
+      const toggleBtn = document.getElementById('menuToggle');
+      const navLinks = document.getElementById('navLinks');
+      if (toggleBtn && navLinks) {
+        toggleBtn.addEventListener('click', (e) => { e.stopPropagation(); navLinks.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if(!navLinks.contains(e.target) && !toggleBtn.contains(e.target)) navLinks.classList.remove('active'); });
+      }
+
+      // Mobile dropdown toggle for Home
+      const homeDropdown = document.querySelector('.home-dropdown');
+      if (homeDropdown) {
+        homeDropdown.addEventListener('click', function(e) {
+          // Only for mobile view
+          if (window.innerWidth <= 768) {
+            e.preventDefault();
+            this.classList.toggle('active-dropdown');
+          }
+        });
+      }
+
+      // TAB SWITCHING
+      const loginTab = document.getElementById('loginTab');
+      const signupTab = document.getElementById('signupTab');
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const switchToSignup = document.getElementById('switchToSignup');
+      const switchToLogin = document.getElementById('switchToLogin');
+
+      function showLogin() {
+        loginTab.classList.add('active');
+        signupTab.classList.remove('active');
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+      }
+      function showSignup() {
+        signupTab.classList.add('active');
+        loginTab.classList.remove('active');
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+      }
+
+      loginTab.addEventListener('click', showLogin);
+      signupTab.addEventListener('click', showSignup);
+      if (switchToSignup) switchToSignup.addEventListener('click', (e) => { e.preventDefault(); showSignup(); });
+      if (switchToLogin) switchToLogin.addEventListener('click', (e) => { e.preventDefault(); showLogin(); });
+
+      // DEMO 404 REDIRECT on login/signup
+      const loginBtn = document.getElementById('loginBtn');
+      const signupBtn = document.getElementById('signupBtn');
+      const mainContent = document.getElementById('mainContent');
+      const page404 = document.getElementById('page404');
+      const backHomeBtn = document.getElementById('backHomeBtn');
+      const signInBtn = document.getElementById('signInBtn');
+
+      function show404() {
+        mainContent.style.display = 'none';
+        page404.style.display = 'flex';
+        window.scrollTo(0, 0);
+      }
+
+      // Login button validation + 404
+      if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const email = document.getElementById('loginEmail').value.trim();
+          const pass = document.getElementById('loginPassword').value.trim();
+          document.getElementById('loginEmailError').textContent = '';
+          document.getElementById('loginPasswordError').textContent = '';
+          if (!email) document.getElementById('loginEmailError').textContent = 'Email required';
+          if (!pass) document.getElementById('loginPasswordError').textContent = 'Password required';
+          if (email && pass) show404();
+        });
+      }
+
+      // Signup button: after validation, switch to login tab, then show 404
+      if (signupBtn) {
+        signupBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('signupName').value.trim();
+          const email = document.getElementById('signupEmail').value.trim();
+          const pass = document.getElementById('signupPassword').value.trim();
+          document.getElementById('signupNameError').textContent = '';
+          document.getElementById('signupEmailError').textContent = '';
+          document.getElementById('signupPasswordError').textContent = '';
+          if (!name) document.getElementById('signupNameError').textContent = 'Name required';
+          if (!email) document.getElementById('signupEmailError').textContent = 'Email required';
+          if (!pass) document.getElementById('signupPasswordError').textContent = 'Password required';
+          
+          if (name && email && pass) {
+            // Switch to login tab first
+            showLogin();
+            // Then show 404 page after a tiny delay to simulate redirect
+            setTimeout(() => {
+              show404();
+            }, 100);
+          }
+        });
+      }
+
+      // Sign in button in nav -> go to login tab
+      if (signInBtn) {
+        signInBtn.addEventListener('click', () => {
+          showLogin();
+          // Optionally scroll to auth card
+          document.querySelector('.auth-hero').scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+
+      // Back from 404
+      if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', () => {
+          mainContent.style.display = 'block';
+          page404.style.display = 'none';
+          // Clear all fields and errors
+          document.getElementById('loginEmail').value = '';
+          document.getElementById('loginPassword').value = '';
+          document.getElementById('signupName').value = '';
+          document.getElementById('signupEmail').value = '';
+          document.getElementById('signupPassword').value = '';
+          document.getElementById('loginEmailError').textContent = '';
+          document.getElementById('loginPasswordError').textContent = '';
+          document.getElementById('signupNameError').textContent = '';
+          document.getElementById('signupEmailError').textContent = '';
+          document.getElementById('signupPasswordError').textContent = '';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
